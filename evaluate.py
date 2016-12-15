@@ -69,7 +69,7 @@ for key in FREQUENCY_BINS:
     for freq in FREQUENCY_BINS[key]:
         FREQUENCY_TO_BIN[freq] = key
 
-def count_errors(reference, scores, maximize, categories, verbose=False):
+def count_errors(reference, scores, maximize, categories, outputs, verbose=False):
     """read in scores file and count number of correct decisions"""
 
     reference = json.load(reference)
@@ -119,10 +119,23 @@ def count_errors(reference, scores, maximize, categories, verbose=False):
                     results['by_frequency_and_distance'][frequency, distance]['correct'] += 1
 
             if verbose and not better(score, errorscore):
+                print('id: {0}'.format(sentence['origin']))
+                annotations = ''
+                if distance is not None:
+                    annotations += 'distance: {0}'.format(distance)
+                if frequency is not None:
+                    annotations += ' frequency: {0}'.format(frequency)
+                if annotations.strip():
+                    print(annotations.strip())
                 print('error: {0}'.format(category))
                 print('source: {0}'.format(sentence['source']))
                 print('correct (score {0}): {1}'.format(score, sentence['reference']))
                 print('error (score {0}): {1}'.format(errorscore, error['contrastive']))
+                if outputs:
+                    test_set, i = sentence['origin'].rsplit('.', 1)
+                    i = int(i) - 1
+                    if test_set in outputs:
+                        print('1best: {0}'.format(outputs[test_set][i]))
                 print()
 
     return results
@@ -234,9 +247,14 @@ def print_latex_table_polarity(results):
     print(' & '.join(['{0}'.format(t) for t in total]))
     print(' & '.join(['{0:.1f}'.format(c/t*100) for (c,t) in zip(correct, total)]))
 
-def main(reference, scores, maximize, categories, verbose, fd, latex, latex_polarity):
 
-    results = count_errors(reference, scores, maximize, categories, verbose)
+def load_outputs(d):
+    for f in d:
+        d[f] = open(d[f]).readlines()
+
+def main(reference, scores, maximize, categories, verbose, outputs, fd, latex, latex_polarity):
+
+    results = count_errors(reference, scores, maximize, categories, outputs, verbose)
 
     print_statistics(results)
     print()
@@ -261,7 +279,6 @@ def main(reference, scores, maximize, categories, verbose, fd, latex, latex_pola
         print_latex_table_polarity(results)
 
 
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -273,12 +290,16 @@ if __name__ == '__main__':
     parser.add_argument('--scores', '-s', type=argparse.FileType('r'),
                         default=sys.stdin, metavar='PATH',
                         help="File with scores (one per line)")
+    parser.add_argument('--outputs', type=json.loads, default="{}",
+                        help='JSON dictionary pointing to one-best output. Used in verbose mode. Example: \'{"newstest2016": "myfile2016", "newstest2015": "myfile2015"}\'')
     parser.add_argument('--categories', nargs="+", default=ERROR_CATEGORIES, choices=ERROR_CATEGORIES,
                         help="List of error categories to include in statistics (default: all)")
     parser.add_argument('--fd', action="store_true", help="print statistics by frequency and distance.")
     parser.add_argument('--latex', action="store_true", help="print latex table.")
     parser.add_argument('--latex-polarity', action="store_true", help="print latex table (for polarity).")
 
-
     args = parser.parse_args()
-    main(args.reference, args.scores, args.maximize, args.categories, args.v, args.fd, args.latex, args.latex_polarity)
+
+    load_outputs(args.outputs)
+
+    main(args.reference, args.scores, args.maximize, args.categories, args.v, args.outputs, args.fd, args.latex, args.latex_polarity)

@@ -160,9 +160,14 @@ The command-line option `--latex` collates and formats statistics like in the pa
 
 Use the command-line option `-v` to print out all contrastive pairs (of the active categories) for which the model prefers the contrastive translation.
 
+Here is an example of a complex command that only calculates errors for the deletion of the negation affix, and displays all errors on stdout.
+For test sets for which one-best outputs are available (newstest2014-16), the one-best is also shown:
+
+    python3 evaluate.py -r lingeval97.json -v --outputs '{"newstest2014": "baselines/char2char.newstest2014", "newstest2015": "baselines/char2char.newstest2015", "newstest2016": "baselines/char2char.newstest2016"}' --categories polarity_affix_del < baselines/char2char.scores
+
 References
 ----------
 
 The test set is described in:
 
-Sennrich, Rico (2016): How Grammatical is Character-level Neural Machine Translation? Assessing MT Quality with Contrastive Translation Pairs.
+Sennrich, Rico (2016): How Grammatical is Character-level Neural Machine Translation? Assessing MT Quality with Contrastive Translation Pairs. https://arxiv.org/abs/1612.04629
