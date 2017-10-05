@@ -170,4 +170,16 @@ References
 
 The test set is described in:
 
-Sennrich, Rico (2016): How Grammatical is Character-level Neural Machine Translation? Assessing MT Quality with Contrastive Translation Pairs. https://arxiv.org/abs/1612.04629
+Sennrich, Rico (2017): How Grammatical is Character-level Neural Machine Translation? Assessing MT Quality with Contrastive Translation Pairs. In Proceedings of EACL. http://aclweb.org/anthology/E17-2060.pdf
+
+Bibtex:
+
+@inproceedings{E17-2060,
+  address = "Valencia, Spain",
+  author = "Sennrich, Rico",
+  booktitle = "{Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers}",
+  pages = "376--382",
+  title = "{How Grammatical is Character-level Neural Machine Translation? Assessing MT Quality with Contrastive Translation Pairs}",
+  url = "http://aclweb.org/anthology/E17-2060.pdf",
+  year = "2017"
+}
